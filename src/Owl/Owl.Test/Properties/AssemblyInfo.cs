@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle( "Owl.Test" )]
-[assembly: AssemblyDescription( "" )]
+[assembly: AssemblyDescription( "Owl unit tests." )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "Hewlett-Packard" )]
+[assembly: AssemblyCompany( "Akabeko" )]
 [assembly: AssemblyProduct( "Owl.Test" )]
-[assembly: AssemblyCopyright( "Copyright © Hewlett-Packard 2012" )]
+[assembly: AssemblyCopyright( "Copyright © Akabeko 2012" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 

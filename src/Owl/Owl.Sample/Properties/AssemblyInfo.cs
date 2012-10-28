@@ -8,11 +8,11 @@ using System.Windows;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle( "Owl.Sample" )]
-[assembly: AssemblyDescription( "" )]
+[assembly: AssemblyDescription( "Owl sample client." )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "" )]
+[assembly: AssemblyCompany( "Akabeko" )]
 [assembly: AssemblyProduct( "Owl.Sample" )]
-[assembly: AssemblyCopyright( "Copyright c  2011" )]
+[assembly: AssemblyCopyright( "Copyright © Akabeko 2012" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
