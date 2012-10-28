@@ -2,7 +2,7 @@
 
 ## Overview
 
-Owl is metadata ( ASF, ID3v2/v2, ...etc ) editoe library.
+Owl is metadata ( ASF, ID3v2/v2, ...etc ) editor library.
 
 * *[Redmine - Owl-2](http://akabeko.me/projects/projects/owl-2 "Redmine - Owl-2")*
 
