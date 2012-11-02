@@ -15,6 +15,8 @@ namespace Owl
 		/// <exception cref="NotSupportedException">src にサポートされていない形式のデータが指定されました。</exception>
 		public TagEditor( Stream src )
 		{
+			if( src == null || src.Length == 0 ) { throw new ArgumentException( "'src' is null or empty." ); }
+
 			throw new NotSupportedException();
 		}
 
