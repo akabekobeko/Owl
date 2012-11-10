@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asf\AsfTagEditor.cs" />
+    <Compile Include="Asf\AsfTagInfo.cs" />
+    <Compile Include="Asf\AsfTags.cs" />
+    <Compile Include="Asf\HeaderObjectType.cs" />
     <Compile Include="ITagEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TagEditor.cs" />
