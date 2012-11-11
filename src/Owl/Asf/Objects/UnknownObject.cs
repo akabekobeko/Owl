@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Owl.Asf.Objects
@@ -25,7 +22,8 @@ namespace Owl.Asf.Objects
 		{
 			if( src == null || header == null ) { throw new ArgumentNullException( "'src' or 'header' is null." ); }
 
-			this._header   = header;
+			this.Id        = header.Guid;
+			this.Size      = header.Size;
 			this._position = src.Position;
 		}
 
@@ -61,10 +59,10 @@ namespace Owl.Asf.Objects
 		{
 			// ヘッダ
 			{
-				var guid = this._header.Guid.ToByteArray();
+				var guid = this.Id.ToByteArray();
 				dest.Write( guid, 0, guid.Length );
 
-				var objectSize = BitConverter.GetBytes( ( ulong )this._header.Size );
+				var objectSize = BitConverter.GetBytes( ( ulong )this.Size );
 				dest.Write( objectSize, 0, objectSize.Length );
 			}
 
@@ -72,7 +70,7 @@ namespace Owl.Asf.Objects
 			src.Seek( this._position, SeekOrigin.Begin );
 
 			// ボディ
-			var size = ( int )this._header.Size - ObjectHeader.ClassByteSize;
+			var size = ( int )this.Size - ObjectHeader.ClassByteSize;
 			var buffer = new byte[ UnknownObject.BufferSize ];
 			do
 			{
@@ -95,14 +93,14 @@ namespace Owl.Asf.Objects
 		}
 
 		/// <summary>
-		/// オブジェクトのサイズを取得します。
+		/// オブジェクトの識別子を取得します。
 		/// </summary>
-		public long Size { get { return this._header.Size; } }
+		public Guid Id { get; private set; }
 
 		/// <summary>
-		/// オブジェクトのヘッダ情報。
+		/// オブジェクトのサイズを取得します。
 		/// </summary>
-		private ObjectHeader _header;
+		public long Size { get; private set; }
 
 		/// <summary>
 		/// ストリーム上においてオブジェクトの内容が開始される位置。

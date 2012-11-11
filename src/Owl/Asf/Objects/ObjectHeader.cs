@@ -20,6 +20,17 @@ namespace Owl.Asf.Objects
 		}
 
 		/// <summary>
+		/// インスタンスを初期化します。
+		/// </summary>
+		/// <param name="guid">GUID。</param>
+		/// <param name="size">サイズ。</param>
+		public ObjectHeader( Guid guid, long size )
+		{
+			this.Guid = guid;
+			this.Size = size;
+		}
+
+		/// <summary>
 		/// ヘッダ情報のサイズ ( バイト単位 ) を取得します。
 		/// </summary>
 		public static readonly int ClassByteSize = 24;
