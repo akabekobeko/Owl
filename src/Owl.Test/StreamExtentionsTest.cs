@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
 using System.IO;
+using NUnit.Framework;
 
 namespace Owl.Test
 {
@@ -26,11 +23,28 @@ namespace Owl.Test
 				var bytes = BitConverter.GetBytes( flag );
 				stream.Write( bytes, 0, bytes.Length );
 				stream.Seek( 0, SeekOrigin.Begin );
-				
+
 				var value = stream.ReadBool();
 				Assert.AreEqual( value, flag );
 			}
+		}
 
+		/// <summary>
+		/// GUID の読み込みをテストします。
+		/// </summary>
+		[Test]
+		public void ReadGuid()
+		{
+			var guid = new Guid( "75B22633-668E-11CF-A6D9-00AA0062CE6C" );
+			using( var stream = new MemoryStream() )
+			{
+				var bytes = guid.ToByteArray();
+				stream.Write( bytes, 0, bytes.Length );
+				stream.Seek( 0, SeekOrigin.Begin );
+
+				var value = stream.ReadGuid();
+				Assert.AreEqual( value, guid );
+			}
 		}
 	}
 }
