@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 
-namespace Owl.Asf
+namespace Owl.Asf.Objects
 {
 	/// <summary>
 	/// ASF の Header Object を表します。
@@ -13,9 +13,44 @@ namespace Owl.Asf
 		/// インスタンスを初期化します。
 		/// </summary>
 		/// <param name="src">ASF 形式のデータ ストリーム。</param>
+		/// <exception cref="ArgumentNullException">src が null 参照です。</exception>
+		/// <exception cref="NotSupportedException">src の内容が ASF 形式ではありません。</exception>
 		public HeaderObject( Stream src )
 		{
+			// 現在は新規作成をサポートせず、必ずストリーム先頭に ASF の HeaderObject が格納されていることを前提とする
+			if( src == null ) { throw new ArgumentNullException( "'src' is null." ); }
+			src.Seek( 0, SeekOrigin.Begin );
 
+			// ASF ファイルであることをチェック
+			{
+				var info = new ObjectHeader( src );
+				if( info.Guid != HeaderObject.Id ) { throw new NotSupportedException( "ASF file format is not." ); }
+
+				this.Size = info.Size;
+			}
+
+			// 子オブジェクト総数と Reserved 1、2 を取得
+			var count = src.ReadInt32();
+			src.Read( this._reserved, 0, 2 );
+
+			// オブジェクト読み取り
+			for( var i = 0; i < count; ++i )
+			{
+				var objectBegin  = src.Position;
+				var objectHeader = new ObjectHeader( src );
+
+				if( FilePropertiesObject.Id == objectHeader.Guid )
+				{
+					this._objects.Add( HeaderObjectType.FileProperties, new FilePropertiesObject( src ) );
+				}
+				else
+				{
+					this._unknowns.Add( new UnknownObject( src, objectHeader ) );
+				}
+
+				// 次のオブジェクト始点へ移動
+				src.Seek( objectBegin + objectHeader.Size, SeekOrigin.Begin );
+			}
 		}
 
 		/// <summary>
@@ -66,9 +101,19 @@ namespace Owl.Asf
 		public long Size { get; private set; }
 
 		/// <summary>
-		/// ASF オブジェクトのディクショナリ。
+		/// オブジェクト種別をキーとする、子オブジェクトのディクショナリ。
 		/// </summary>
 		private Dictionary< HeaderObjectType, IAsfObject > _objects = new Dictionary< HeaderObjectType, IAsfObject >();
+
+		/// <summary>
+		/// 未知の子オブジェクトのコレクション。
+		/// </summary>
+		private List< UnknownObject > _unknowns = new List< UnknownObject >();
+
+		/// <summary>
+		/// Header Object の予約済み領域。
+		/// </summary>
+		private byte[] _reserved = new byte[ 2 ];
 
 		/// <summary>
 		/// Header Object の識別子です。
