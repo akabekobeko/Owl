@@ -60,7 +60,8 @@ namespace Owl.Asf.Objects
 		/// <returns>所有している場合は true。それ以外は false。</returns>
 		public bool HasValue( AsfTagInfo tag )
 		{
-			throw new NotImplementedException();
+			IAsfObject asfObject;
+			return ( this._objects.TryGetValue( tag.HeaderObject, out asfObject ) ? asfObject.HasValue( tag ) : false );
 		}
 
 		/// <summary>
