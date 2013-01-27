@@ -58,8 +58,11 @@ namespace Owl.Asf.Objects
 		/// </summary>
 		/// <param name="tag">タグ。</param>
 		/// <returns>所有している場合は true。それ以外は false。</returns>
+		/// <exception cref="ArgumentNullException">tag が null 参照です。</exception>
 		public bool HasValue( AsfTagInfo tag )
 		{
+			if( tag == null ) { throw new ArgumentNullException( "'tag' is null." ); }
+
 			IAsfObject asfObject;
 			return ( this._objects.TryGetValue( tag.HeaderObject, out asfObject ) ? asfObject.HasValue( tag ) : false );
 		}
@@ -70,9 +73,13 @@ namespace Owl.Asf.Objects
 		/// <param name="tag">タグ。</param>
 		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
-		public object Read( AsfTagInfo tag, System.IO.Stream src )
+		/// <exception cref="ArgumentNullException">tag が null 参照です。</exception>
+		public object Read( AsfTagInfo tag, Stream src )
 		{
-			throw new NotImplementedException();
+			if( tag == null ) { throw new ArgumentNullException( "'tag' is null." ); }
+
+			IAsfObject obj;
+			return ( this._objects.TryGetValue( tag.HeaderObject, out obj ) ? obj.Read( tag, src ) : null );
 		}
 
 		/// <summary>
@@ -80,7 +87,7 @@ namespace Owl.Asf.Objects
 		/// </summary>
 		/// <param name="src">タグ情報の読み出し元となるストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( System.IO.Stream src, System.IO.Stream dest )
+		public void Save( Stream src, Stream dest )
 		{
 			throw new NotImplementedException();
 		}

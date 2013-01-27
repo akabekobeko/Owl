@@ -31,10 +31,21 @@ namespace Owl.Test.Asf
 			else
 			{
 				// 総サイズ
-				long size = 30;
+				long                 size           = 30;
+				FilePropertiesObject fileProperties = null;
 				foreach( IAsfObject obj in childObjects )
 				{
 					size += obj.Size;
+					if( obj is FilePropertiesObject )
+					{
+						fileProperties = obj as FilePropertiesObject;
+					}
+				}
+
+				// FilePropertiesObject のサイズは全体サイズとなる
+				if( fileProperties != null )
+				{
+					fileProperties.FileSize = ( ulong )size;
 				}
 
 				// HeaderObject
@@ -63,8 +74,16 @@ namespace Owl.Test.Asf
 			using( var src = this.CreateTestHeader( new IAsfObject[] { new FilePropertiesObject( null ) } ) )
 			{
 				var headerObject = new HeaderObject( src );
-				Assert.AreEqual( headerObject.HasValue( AsfTags.FileSize ), true );
-				Assert.AreEqual( headerObject.HasValue( AsfTags.Title    ), false );
+				
+				// null 参照
+				Assert.Throws< ArgumentNullException >( () =>
+				{
+					headerObject.HasValue( null );
+				} );
+
+				// 所持、未所持チェック
+				Assert.AreEqual( true,  headerObject.HasValue( AsfTags.FileSize ) );
+				Assert.AreEqual( false, headerObject.HasValue( AsfTags.Title    ) );
 			}
 		}
 
@@ -94,6 +113,32 @@ namespace Owl.Test.Asf
 			{
 				var headerObject = new HeaderObject( src );
 				Assert.AreEqual( src.Length, headerObject.Size );
+			}
+		}
+
+		/// <summary>
+		/// 値の読み込みをテストします。
+		/// </summary>
+		[Test]
+		public void Read()
+		{
+			// ASF ヘッダー
+			using( var src = this.CreateTestHeader( new IAsfObject[] { new FilePropertiesObject( null ) } ) )
+			{
+				var headerObject = new HeaderObject( src );
+
+				// null 参照
+				Assert.Throws< ArgumentNullException >( () =>
+				{
+					headerObject.Read( null, null );
+				} );
+
+				// 読み込みテスト
+				// HeaderObject しか書き込んでいないので、ファイルサイズはヘッダーのサイズと等しいはず
+				// Title は書き込んでいないので null になるはず
+				//
+				Assert.AreEqual( headerObject.Size, headerObject.Read( AsfTags.FileSize, null ) );
+				Assert.AreEqual( null,              headerObject.Read( AsfTags.Title, null    ) );
 			}
 		}
 	}
