@@ -7,7 +7,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// ASF の Header Object を表します。
 	/// </summary>
-	internal class HeaderObject : IAsfObject
+	internal class HeaderObject
 	{
 		/// <summary>
 		/// インスタンスを初期化します。
@@ -19,37 +19,38 @@ namespace Owl.Asf.Objects
 		{
 			// 現在は新規作成をサポートせず、必ずストリーム先頭に ASF の HeaderObject が格納されていることを前提とする
 			if( src == null ) { throw new ArgumentNullException( "'src' is null." ); }
-			src.Seek( 0, SeekOrigin.Begin );
+			this._src = src;
+			this._src.Seek( 0, SeekOrigin.Begin );
 
 			// ASF ファイルであることをチェック
 			{
-				var info = new ObjectHeader( src );
+				var info = new ObjectHeader( this._src );
 				if( info.Guid != HeaderObject.Id ) { throw new NotSupportedException( "ASF file format is not." ); }
 
 				this.Size = info.Size;
 			}
 
 			// 子オブジェクト総数と Reserved 1、2 を取得
-			var count = src.ReadInt32();
-			src.Read( this._reserved, 0, 2 );
+			var count = this._src.ReadInt32();
+			this._src.Read( this._reserved, 0, 2 );
 
 			// オブジェクト読み取り
 			for( var i = 0; i < count; ++i )
 			{
-				var objectBegin  = src.Position;
-				var objectHeader = new ObjectHeader( src );
+				var objectBegin  = this._src.Position;
+				var objectHeader = new ObjectHeader( this._src );
 
 				if( FilePropertiesObject.Id == objectHeader.Guid )
 				{
-					this._objects.Add( HeaderObjectType.FileProperties, new FilePropertiesObject( src ) );
+					this._objects.Add( HeaderObjectType.FileProperties, new FilePropertiesObject( this._src ) );
 				}
 				else
 				{
-					this._unknowns.Add( new UnknownObject( src, objectHeader ) );
+					this._unknowns.Add( new UnknownObject( this._src, objectHeader ) );
 				}
 
 				// 次のオブジェクト始点へ移動
-				src.Seek( objectBegin + objectHeader.Size, SeekOrigin.Begin );
+				this._src.Seek( objectBegin + objectHeader.Size, SeekOrigin.Begin );
 			}
 		}
 
@@ -74,20 +75,19 @@ namespace Owl.Asf.Objects
 		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
 		/// <exception cref="ArgumentNullException">tag が null 参照です。</exception>
-		public object Read( AsfTagInfo tag, Stream src )
+		public object Read( AsfTagInfo tag )
 		{
 			if( tag == null ) { throw new ArgumentNullException( "'tag' is null." ); }
 
 			IAsfObject obj;
-			return ( this._objects.TryGetValue( tag.HeaderObject, out obj ) ? obj.Read( tag, src ) : null );
+			return ( this._objects.TryGetValue( tag.HeaderObject, out obj ) ? obj.Read( tag ) : null );
 		}
 
 		/// <summary>
 		/// 編集内容を保存します
 		/// </summary>
-		/// <param name="src">タグ情報の読み出し元となるストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream src, Stream dest )
+		public void Save( Stream dest )
 		{
 			throw new NotImplementedException();
 		}
@@ -107,6 +107,11 @@ namespace Owl.Asf.Objects
 		/// オブジェクトのサイズを取得します。
 		/// </summary>
 		public long Size { get; private set; }
+
+		/// <summary>
+		/// ASF タグ情報の読み取り元ストリーム。
+		/// </summary>
+		private Stream _src;
 
 		/// <summary>
 		/// オブジェクト種別をキーとする、子オブジェクトのディクショナリ。

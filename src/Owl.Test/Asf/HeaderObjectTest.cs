@@ -57,7 +57,7 @@ namespace Owl.Test.Asf
 				// 子オブジェクト
 				foreach( IAsfObject obj in childObjects )
 				{
-					obj.Save( null, src );
+					obj.Save( src );
 				}
 			}
 
@@ -130,15 +130,15 @@ namespace Owl.Test.Asf
 				// null 参照
 				Assert.Throws< ArgumentNullException >( () =>
 				{
-					headerObject.Read( null, null );
+					headerObject.Read( null );
 				} );
 
 				// 読み込みテスト
 				// HeaderObject しか書き込んでいないので、ファイルサイズはヘッダーのサイズと等しいはず
 				// Title は書き込んでいないので null になるはず
 				//
-				Assert.AreEqual( headerObject.Size, headerObject.Read( AsfTags.FileSize, null ) );
-				Assert.AreEqual( null,              headerObject.Read( AsfTags.Title, null    ) );
+				Assert.AreEqual( headerObject.Size, headerObject.Read( AsfTags.FileSize ) );
+				Assert.AreEqual( null,              headerObject.Read( AsfTags.Title    ) );
 			}
 		}
 	}

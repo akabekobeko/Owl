@@ -25,6 +25,7 @@ namespace Owl.Asf.Objects
 			this.Id        = header.Guid;
 			this.Size      = header.Size;
 			this._position = src.Position;
+			this._src      = src;
 		}
 
 		/// <summary>
@@ -42,10 +43,9 @@ namespace Owl.Asf.Objects
 		/// タグ情報を読み取ります。
 		/// </summary>
 		/// <param name="tag">タグ。</param>
-		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
 		/// <exception cref="NotSupportedException">未サポートの操作です。</exception>
-		public object Read( AsfTagInfo tag, Stream src )
+		public object Read( AsfTagInfo tag )
 		{
 			throw new NotSupportedException();
 		}
@@ -53,9 +53,8 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// 編集内容を保存します
 		/// </summary>
-		/// <param name="src">タグ情報の読み出し元となるストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream src, Stream dest )
+		public void Save( Stream dest )
 		{
 			// ヘッダ
 			{
@@ -66,15 +65,15 @@ namespace Owl.Asf.Objects
 				dest.Write( objectSize, 0, objectSize.Length );
 			}
 
-			var position = src.Position;
-			src.Seek( this._position, SeekOrigin.Begin );
+			var position = this._src.Position;
+			this._src.Seek( this._position, SeekOrigin.Begin );
 
 			// ボディ
 			var size = ( int )this.Size - ObjectHeader.ClassByteSize;
 			var buffer = new byte[ UnknownObject.BufferSize ];
 			do
 			{
-				var read = src.Read( buffer, 0, ( size > UnknownObject.BufferSize ? UnknownObject.BufferSize : size ) );
+				var read = this._src.Read( buffer, 0, ( size > UnknownObject.BufferSize ? UnknownObject.BufferSize : size ) );
 				dest.Write( buffer, 0, read );
 				size -= read;
 
@@ -101,6 +100,11 @@ namespace Owl.Asf.Objects
 		/// オブジェクトのサイズを取得します。
 		/// </summary>
 		public long Size { get; private set; }
+
+		/// <summary>
+		/// ASF タグ情報の読み取り元ストリーム。
+		/// </summary>
+		private Stream _src;
 
 		/// <summary>
 		/// ストリーム上においてオブジェクトの内容が開始される位置。

@@ -21,7 +21,7 @@ namespace Owl.Test.Asf
 				// ファイルサイズを更新
 				var obj = new FilePropertiesObject( null );
 				obj.FileSize = 2048;				
-				obj.Save( null, stream );
+				obj.Save( stream );
 
 				// オブジェクトのボディ部分から読み込み
 				stream.Seek( ObjectHeader.ClassByteSize, SeekOrigin.Begin );

@@ -66,7 +66,7 @@ namespace Owl.Test.Asf
 			// Owl クライアントは ASF オブジェクトを直接操作しないため、通常は意識する必要のない処理
 			//
 			var dest = new MemoryStream();
-			srcObject.Save( src, dest );
+			srcObject.Save( dest );
 			dest.Seek( 0, SeekOrigin.Begin );
 
 			var destObject = new UnknownObject( dest, new ObjectHeader( dest ) );

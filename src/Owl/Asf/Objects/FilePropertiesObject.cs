@@ -59,7 +59,7 @@ namespace Owl.Asf.Objects
 		/// <param name="tag">タグ。</param>
 		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
-		public object Read( AsfTagInfo tag, Stream src )
+		public object Read( AsfTagInfo tag )
 		{
 			if( tag == AsfTags.Duration )
 			{
@@ -78,7 +78,7 @@ namespace Owl.Asf.Objects
 		/// </summary>
 		/// <param name="src">タグ情報の読み出し元となるストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream src, Stream dest )
+		public void Save( Stream dest )
 		{
 			// ヘッダ
 			dest.Write( FilePropertiesObject.Id.ToByteArray(), 0, 16 );
