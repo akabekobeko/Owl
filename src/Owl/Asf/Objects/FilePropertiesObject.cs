@@ -176,7 +176,7 @@ namespace Owl.Asf.Objects
 		public long Size { get { return 104; } }
 
 		/// <summary>
-		/// File Properties Object の識別子です。
+		/// オブジェクトの識別子です。
 		/// </summary>
 		public static readonly Guid Id = new Guid( "8CABDCA1-A947-11CF-8EE4-00C00C205365" );
 

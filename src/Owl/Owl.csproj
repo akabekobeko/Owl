@@ -43,11 +43,13 @@
     <Compile Include="Asf\AsfTagEditor.cs" />
     <Compile Include="Asf\AsfTagInfo.cs" />
     <Compile Include="Asf\AsfTags.cs" />
+    <Compile Include="Asf\Objects\ContentDescriptionObject.cs" />
     <Compile Include="Asf\Objects\FilePropertiesObject.cs" />
     <Compile Include="Asf\Objects\HeaderObject.cs" />
     <Compile Include="Asf\Objects\HeaderObjectType.cs" />
     <Compile Include="Asf\Objects\IAsfObject.cs" />
     <Compile Include="Asf\Objects\ObjectHeader.cs" />
+    <Compile Include="Asf\Objects\ObjectTagValue.cs" />
     <Compile Include="Asf\Objects\UnknownObject.cs" />
     <Compile Include="ITagEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
