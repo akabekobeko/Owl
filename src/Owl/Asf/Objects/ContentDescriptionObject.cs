@@ -103,9 +103,43 @@ namespace Owl.Asf.Objects
 		/// </summary>
 		/// <param name="tag">タグ。</param>
 		/// <param name="value">タグ情報。値を削除する場合は null を指定します。</param>
+		/// <exception cref="ArgumentNullException">tag が null 参照です。</exception>
+		/// <exception cref="NotSupportedException">指定されたタグは編集をサポートしていません。</exception>
 		public void Write( AsfTagInfo tag, object value )
 		{
-			throw new NotImplementedException();
+			if( tag == null  ) { throw new ArgumentNullException( "tag" ); }
+			if( !tag.CanEdit ) { throw new NotSupportedException( "Tag is read-only." ); }
+
+			if( value == null )
+			{
+				// 削除
+				ObjectTagValue tagValue;
+				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
+				{
+					this.Size -= tagValue.Length;
+					this._tags.Remove( tag.Name );
+				}
+			}
+			else
+			{
+				// 更新と追加
+				ObjectTagValue tagValue;
+				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
+				{
+					// 更新
+					this.Size -= tagValue.Length;
+					tagValue = new ObjectTagValue( tag.Type, value );
+					this.Size += tagValue.Length;
+					this._tags[ tag.Name ] = tagValue;
+				}
+				else
+				{
+					// 追加
+					tagValue = new ObjectTagValue( tag.Type, value );
+					this.Size += tagValue.Length;
+					this._tags.Add( tag.Name, tagValue );
+				}
+			}
 		}
 
 		/// <summary>
