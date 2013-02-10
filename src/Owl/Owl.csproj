@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asf\AsfTagDataType.cs" />
     <Compile Include="Asf\AsfTagEditor.cs" />
     <Compile Include="Asf\AsfTagInfo.cs" />
     <Compile Include="Asf\AsfTags.cs" />
@@ -50,6 +51,8 @@
     <Compile Include="Asf\Objects\IAsfObject.cs" />
     <Compile Include="Asf\Objects\ObjectHeader.cs" />
     <Compile Include="Asf\Objects\ObjectTagValue.cs" />
+    <Compile Include="Asf\Objects\ObjectTagValueReader.cs" />
+    <Compile Include="Asf\Objects\ObjectTagValueType.cs" />
     <Compile Include="Asf\Objects\UnknownObject.cs" />
     <Compile Include="ITagEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -58,6 +61,7 @@
     <Compile Include="TagInfo.cs" />
     <Compile Include="Tags.cs" />
     <Compile Include="TagDataType.cs" />
+    <Compile Include="Utilities\BinaryUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

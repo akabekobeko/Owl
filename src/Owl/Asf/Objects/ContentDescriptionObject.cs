@@ -34,7 +34,7 @@ namespace Owl.Asf.Objects
 		/// <returns>所有している場合は true。それ以外は false。</returns>
 		public bool HasValue( AsfTagInfo tag )
 		{
-			throw new NotImplementedException();
+			return this._tags.ContainsKey( tag.Name );
 		}
 
 		/// <summary>
@@ -66,7 +66,10 @@ namespace Owl.Asf.Objects
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
 		public object Read( AsfTagInfo tag )
 		{
-			throw new NotImplementedException();
+			if( tag == null ) { throw new ArgumentNullException( "tag" ); }
+
+			ObjectTagValue value;
+			return ( this._tags.TryGetValue( tag.Name, out value ) ? value.Read( tag.Type, this._src ) : null );
 		}
 
 		/// <summary>
