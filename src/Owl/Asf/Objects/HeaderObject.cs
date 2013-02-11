@@ -104,7 +104,18 @@ namespace Owl.Asf.Objects
 		/// <param name="value">タグ情報。値を削除する場合は null を指定します。</param>
 		public void Write( AsfTagInfo tag, object value )
 		{
-			throw new NotImplementedException();
+			IAsfObject obj;
+			if( this._objects.TryGetValue( tag.HeaderObject, out obj ) )
+			{
+				var old = obj.Size;
+				obj.Write( tag, value );
+
+				var size = obj.Size - old;
+				this.Size += size;
+
+				var file = this._objects[ HeaderObjectType.FileProperties ] as FilePropertiesObject;
+				file.FileSize += ( ulong )( size );
+			}
 		}
 
 		/// <summary>
