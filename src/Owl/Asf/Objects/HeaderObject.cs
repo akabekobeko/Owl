@@ -40,9 +40,13 @@ namespace Owl.Asf.Objects
 				var objectBegin  = this._src.Position;
 				var objectHeader = new ObjectHeader( this._src );
 
-				if( FilePropertiesObject.Id == objectHeader.Guid )
+				if( objectHeader.Guid == FilePropertiesObject.Id )
 				{
 					this._objects.Add( HeaderObjectType.FileProperties, new FilePropertiesObject( this._src ) );
+				}
+				else if( objectHeader.Guid == ContentDescriptionObject.Id )
+				{
+					this._objects.Add( HeaderObjectType.ContentDescription, new ContentDescriptionObject( this._src, objectHeader.Size ) );
 				}
 				else
 				{
