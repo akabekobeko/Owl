@@ -13,7 +13,8 @@ namespace Owl.Asf.Objects
 		/// インスタンスを初期化します。
 		/// </summary>
 		/// <param name="src">オブジェクト情報を読み取るストリーム。位置はオブジェクトのボディ先頭 ( サイズ情報の直後 ) に設定します。新規作成なら null を指定します。</param>
-		public ContentDescriptionObject( Stream src )
+		/// <param name="size">オブジェクトのサイズ。</param>
+		public ContentDescriptionObject( Stream src, long size )
 		{
 			if( src == null )
 			{
@@ -23,6 +24,7 @@ namespace Owl.Asf.Objects
 			else
 			{
 				this._src = src;
+				this.Size = size;
 				this.Load( src );
 			}
 		}
@@ -49,8 +51,8 @@ namespace Owl.Asf.Objects
 		/// <param name="src">オブジェクト情報を読み取るストリーム。位置はオブジェクトのボディ先頭 ( サイズ情報の直後 ) に設定します。</param>
 		private void Load( Stream src )
 		{
-			var length = new int[ ContentDescriptionObject.RequiredTagCount ] { src.ReadInt16(), src.ReadInt16(), src.ReadInt16(), src.ReadInt16(), src.ReadInt16() };
-			var names  = ContentDescriptionObject.GetRequiredTagNames();
+			var length = new int[ RequiredTagCount ] { src.ReadInt16(), src.ReadInt16(), src.ReadInt16(), src.ReadInt16(), src.ReadInt16() };
+			var names = RequiredTagNames;
 
 			for( var i = 0; i < ContentDescriptionObject.RequiredTagCount; ++i )
 			{
@@ -75,17 +77,12 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// 必須タグの名前情報コレクションを取得します。
 		/// </summary>
-		/// <returns>名前情報コレクション。</returns>
-		private static string[] GetRequiredTagNames()
+		private static string[] RequiredTagNames
 		{
-			return new string[ ContentDescriptionObject.RequiredTagCount ]
+			get
 			{
-				AsfTags.Title.Name,
-				AsfTags.Author.Name,
-				AsfTags.Copyright.Name,
-				AsfTags.Description.Name,
-				AsfTags.Rating.Name
-			};
+				return new string[ RequiredTagCount ] { AsfTags.Title.Name, AsfTags.Author.Name, AsfTags.Copyright.Name, AsfTags.Description.Name, AsfTags.Rating.Name };
+			}
 		}
 
 		/// <summary>
@@ -94,7 +91,40 @@ namespace Owl.Asf.Objects
 		/// <param name="dest">保存先となるストリーム。</param>
 		public void Save( Stream dest )
 		{
-			throw new NotImplementedException();
+			// ヘッダ
+			{
+				var b = ContentDescriptionObject.Id.ToByteArray();
+				dest.Write( b, 0, b.Length );
+
+				var size = BitConverter.GetBytes( ( ulong )this.Size );
+				dest.Write( size, 0, size.Length );
+			}
+
+			var names  = RequiredTagNames;
+			var values = new List< byte[] >( RequiredTagCount );
+			var empty  = new byte[ 0 ];
+
+			// サイズ
+			for( int i = 0; i < RequiredTagCount; ++i )
+			{
+				ObjectTagValue value;
+				if( _tags.TryGetValue( names[ i ], out value ) )
+				{
+					values.Add( ( byte[] )value.Read( AsfTagDataType.Binary, this._src ) );
+				}
+				else
+				{
+					values.Add( empty );
+				}
+
+				dest.Write( BitConverter.GetBytes( ( ushort )values[ i ].Length ), 0, 2 );
+			}
+
+			// 値
+			for( var i = 0; i < RequiredTagCount; ++i )
+			{
+				dest.Write( values[ i ], 0, values[ i ].Length );
+			}
 		}
 
 		/// <summary>
@@ -104,16 +134,16 @@ namespace Owl.Asf.Objects
 		/// <param name="tag">タグ。</param>
 		/// <param name="value">タグ情報。値を削除する場合は null を指定します。</param>
 		/// <exception cref="ArgumentNullException">tag が null 参照です。</exception>
-		/// <exception cref="NotSupportedException">指定されたタグは編集をサポートしていません。</exception>
+		/// <exception cref="NotSupportedException">指定されたタグは読み取り専用です。</exception>
 		public void Write( AsfTagInfo tag, object value )
 		{
 			if( tag == null  ) { throw new ArgumentNullException( "tag" ); }
 			if( !tag.CanEdit ) { throw new NotSupportedException( "Tag is read-only." ); }
 
+			ObjectTagValue tagValue;
 			if( value == null )
 			{
 				// 削除
-				ObjectTagValue tagValue;
 				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
 				{
 					this.Size -= tagValue.Length;
@@ -123,7 +153,6 @@ namespace Owl.Asf.Objects
 			else
 			{
 				// 更新と追加
-				ObjectTagValue tagValue;
 				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
 				{
 					// 更新
@@ -155,7 +184,7 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// タグ名をキーとする、タグ値のディクショナリ。
 		/// </summary>
-		private Dictionary< string, ObjectTagValue > _tags = new Dictionary< string, ObjectTagValue >( ContentDescriptionObject.RequiredTagCount );
+		private Dictionary< string, ObjectTagValue > _tags = new Dictionary< string, ObjectTagValue >( RequiredTagCount );
 
 		/// <summary>
 		/// オブジェクトの識別子です。
