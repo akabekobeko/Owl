@@ -32,6 +32,19 @@ namespace Owl.Asf.Objects
 		}
 
 		/// <summary>
+		/// タグ全体のサイズを算出します。
+		/// </summary>
+		/// <param name="name">タグの名前。</param>
+		/// <param name="value">タグ情報。</param>
+		/// <returns>サイズ。</returns>
+		private static long CalcTagSize( string name, ObjectTagValue value )
+		{
+			// 名前の長さ ( 2 byte ) + 名前 + 値の型 ( 2 byte ) + 値の長さ ( 2 byte ) + 値 
+			var nameLength = Encoding.Unicode.GetByteCount( String.Concat( name, "\0" ) );
+			return 2 + nameLength + 2 + 2 + value.Length;
+		}
+
+		/// <summary>
 		/// 指定されたタグ情報を所有していることを調べます。
 		/// </summary>
 		/// <param name="tag">タグ。</param>
@@ -84,7 +97,42 @@ namespace Owl.Asf.Objects
 		/// <param name="dest">保存先となるストリーム。</param>
 		public void Save( Stream src, Stream dest )
 		{
-			throw new NotImplementedException();
+			// ヘッダ
+			{
+				var guid = ExtendedContentDescriptionObject.Id.ToByteArray();
+				dest.Write( guid, 0, guid.Length );
+
+				var objectSize = BitConverter.GetBytes( ( ulong )this.Size );
+				dest.Write( objectSize, 0, objectSize.Length );
+			}
+
+			// タグ総数
+			{
+				var b = BitConverter.GetBytes( ( ushort )this._tags.Count );
+				dest.Write( b, 0, b.Length );
+			}
+
+			// タグ
+			foreach( var tag in this._tags )
+			{
+				// 名前の長さ ( 2 byte ) + 名前 + 値の型 ( 2 byte ) + 値の長さ ( 2 byte ) + 値 
+				var name = StringToBytes( tag.Key );
+				dest.Write( BitConverter.GetBytes( ( ushort )name.Length ), 0, 2 );
+				dest.Write( name, 0, name.Length );
+				dest.Write( BitConverter.GetBytes( ( ushort )tag.Value.Type ), 0, 2 );
+				dest.Write( BitConverter.GetBytes( ( ushort )tag.Value.Length ), 0, 2 );
+				dest.Write( ( byte[] )tag.Value.Read( AsfTagDataType.Binary, src ), 0, tag.Value.Length );
+			}
+		}
+
+		/// <summary>
+		/// 文字列を NULL 文字終端の UTF-16LE バイト配列に変換します。
+		/// </summary>
+		/// <param name="str">文字列。</param>
+		/// <returns>バイト配列。</returns>
+		private static byte[] StringToBytes( string str )
+		{
+			return Encoding.Unicode.GetBytes( String.Concat( str, "\0" ) );
 		}
 
 		/// <summary>
@@ -97,7 +145,38 @@ namespace Owl.Asf.Objects
 		/// <exception cref="NotSupportedException">指定されたタグは読み取り専用です。</exception>
 		public void Write( AsfTagInfo tag, object value )
 		{
-			throw new NotImplementedException();
+			if( tag == null  ) { throw new ArgumentNullException( "tag" ); }
+			if( !tag.CanEdit ) { throw new NotSupportedException( "Tag is read-only." ); }
+
+			if( value == null )
+			{
+				// 削除
+				ObjectTagValue tagValue;
+				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
+				{
+					this.Size -= CalcTagSize( tag.Name, tagValue );
+					this._tags.Remove( tag.Name );
+				}
+			}
+			else
+			{
+				ObjectTagValue tagValue;
+				if( this._tags.TryGetValue( tag.Name, out tagValue ) )
+				{
+					// 更新
+					this.Size -= CalcTagSize( tag.Name, tagValue );
+					tagValue = new ObjectTagValue( tag.Type, value );
+					this.Size += CalcTagSize( tag.Name, tagValue );
+					this._tags[ tag.Name ] = tagValue;
+				}
+				else
+				{
+					// 追加
+					tagValue = new ObjectTagValue( tag.Type, value );
+					this.Size += CalcTagSize( tag.Name, tagValue );
+					this._tags.Add( tag.Name, tagValue );
+				}
+			}
 		}
 
 		/// <summary>
