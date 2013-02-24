@@ -7,7 +7,7 @@ namespace Owl.Asf.Objects
 	/// Object ヘッダ部分を表します。
 	/// ヘッダは Object の識別子となる GUID と、ヘッダも含む Object 全体のデータ サイズで構成されます。
 	/// </summary>
-	internal sealed class ObjectHeader
+	sealed class ObjectHeader
 	{
 		/// <summary>
 		/// インスタンスを初期化します。

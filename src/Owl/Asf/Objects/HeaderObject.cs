@@ -7,7 +7,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// ASF の Header Object を表します。
 	/// </summary>
-	internal class HeaderObject
+	sealed class HeaderObject
 	{
 		/// <summary>
 		/// インスタンスを初期化します。
@@ -84,7 +84,7 @@ namespace Owl.Asf.Objects
 			if( tag == null ) { throw new ArgumentNullException( "'tag' is null." ); }
 
 			IAsfObject obj;
-			return ( this._objects.TryGetValue( tag.HeaderObject, out obj ) ? obj.Read( tag ) : null );
+			return ( this._objects.TryGetValue( tag.HeaderObject, out obj ) ? obj.Read( this._src, tag ) : null );
 		}
 
 		/// <summary>

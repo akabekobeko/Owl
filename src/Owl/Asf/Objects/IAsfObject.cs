@@ -6,7 +6,7 @@ namespace Owl.Asf
 	/// <summary>
 	/// ASF のオブジェクトを表します。
 	/// </summary>
-	internal interface IAsfObject
+	interface IAsfObject
 	{
 		/// <summary>
 		/// 指定されたタグ情報を所有していることを調べます。
@@ -18,15 +18,17 @@ namespace Owl.Asf
 		/// <summary>
 		/// タグ情報を読み取ります。
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="tag">タグ。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
-		object Read( AsfTagInfo tag );
+		object Read( Stream src, AsfTagInfo tag );
 
 		/// <summary>
 		/// 編集内容を保存します
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		void Save( Stream dest );
+		void Save( Stream src, Stream dest );
 
 		/// <summary>
 		/// タグ情報を書き込みます。

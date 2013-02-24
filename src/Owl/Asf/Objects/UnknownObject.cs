@@ -6,7 +6,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// 未知のオブジェクトを表します。
 	/// </summary>
-	internal sealed class UnknownObject : IAsfObject
+	sealed class UnknownObject : IAsfObject
 	{
 		/// <summary>
 		/// インスタンスを初期化します。
@@ -42,10 +42,11 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// タグ情報を読み取ります。
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="tag">タグ。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
 		/// <exception cref="NotSupportedException">未サポートの操作です。</exception>
-		public object Read( AsfTagInfo tag )
+		public object Read( Stream src, AsfTagInfo tag )
 		{
 			throw new NotSupportedException();
 		}
@@ -53,8 +54,9 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// 編集内容を保存します
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream dest )
+		public void Save( Stream src, Stream dest )
 		{
 			// ヘッダ
 			{

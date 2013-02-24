@@ -5,7 +5,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// オブジェクトのタグ値を読み取ります。
 	/// </summary>
-	class ObjectTagValueReader
+	sealed class ObjectTagValueReader
 	{
 		/// <summary>
 		/// インスタンスを初期化します。

@@ -57,7 +57,7 @@ namespace Owl.Test.Asf
 				// 子オブジェクト
 				foreach( IAsfObject obj in childObjects )
 				{
-					obj.Save( src );
+					obj.Save( null, src );
 				}
 			}
 

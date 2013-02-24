@@ -7,7 +7,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// Content Description Object を表します。
 	/// </summary>
-	class ContentDescriptionObject : IAsfObject
+	sealed class ContentDescriptionObject : IAsfObject
 	{
 		/// <summary>
 		/// インスタンスを初期化します。
@@ -23,7 +23,6 @@ namespace Owl.Asf.Objects
 			}
 			else
 			{
-				this._src = src;
 				this.Size = size;
 				this.Load( src );
 			}
@@ -56,22 +55,24 @@ namespace Owl.Asf.Objects
 
 			for( var i = 0; i < ContentDescriptionObject.RequiredTagCount; ++i )
 			{
-				this._tags.Add( names[ i ], new ObjectTagValue( ObjectTagValueType.String, this._src.Position, length[ i ] ) );
-				this._src.Seek( length[ i ], SeekOrigin.Current );
+				this._tags.Add( names[ i ], new ObjectTagValue( ObjectTagValueType.String, src.Position, length[ i ] ) );
+				src.Seek( length[ i ], SeekOrigin.Current );
 			}
 		}
 
 		/// <summary>
 		/// タグ情報を読み取ります。
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="tag">タグ。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
-		public object Read( AsfTagInfo tag )
+		/// <exception cref="NotSupportedException">未サポートの操作です。</exception>
+		public object Read( Stream src, AsfTagInfo tag )
 		{
 			if( tag == null ) { throw new ArgumentNullException( "tag" ); }
 
 			ObjectTagValue value;
-			return ( this._tags.TryGetValue( tag.Name, out value ) ? value.Read( tag.Type, this._src ) : null );
+			return ( this._tags.TryGetValue( tag.Name, out value ) ? value.Read( tag.Type, src ) : null );
 		}
 
 		/// <summary>
@@ -88,8 +89,9 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// 編集内容を保存します
 		/// </summary>
+		/// <param name="src">情報を読み取るストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream dest )
+		public void Save( Stream src, Stream dest )
 		{
 			// ヘッダ
 			{
@@ -110,7 +112,7 @@ namespace Owl.Asf.Objects
 				ObjectTagValue value;
 				if( _tags.TryGetValue( names[ i ], out value ) )
 				{
-					values.Add( ( byte[] )value.Read( AsfTagDataType.Binary, this._src ) );
+					values.Add( ( byte[] )value.Read( AsfTagDataType.Binary, src ) );
 				}
 				else
 				{
@@ -175,11 +177,6 @@ namespace Owl.Asf.Objects
 		/// オブジェクトのサイズを取得します。
 		/// </summary>
 		public long Size { get; private set; }
-
-		/// <summary>
-		/// オブジェクト情報を読み取るストリーム。
-		/// </summary>
-		private Stream _src;
 
 		/// <summary>
 		/// タグ名をキーとする、タグ値のディクショナリ。

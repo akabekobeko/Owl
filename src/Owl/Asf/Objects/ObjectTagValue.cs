@@ -7,7 +7,7 @@ namespace Owl.Asf.Objects
 	/// <summary>
 	/// オブジェクト内のタグ値を表します。
 	/// </summary>
-	class ObjectTagValue
+	sealed class ObjectTagValue
 	{
 		/// <summary>
 		/// ストリーム上のタグ値を遅延読み込みするための情報から、インスタンスを初期化します。

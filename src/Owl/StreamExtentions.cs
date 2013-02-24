@@ -6,7 +6,7 @@ namespace Owl
 	/// <summary>
 	/// Stream の拡張クラスです。
 	/// </summary>
-	internal static class StreamExtentions
+	static class StreamExtentions
 	{
 		/// <summary>
 		/// 真偽値 ( 8 ビット ) を読み取り、ストリームの位置を進めます。

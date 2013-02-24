@@ -33,27 +33,28 @@ namespace Owl.Test.Asf
 		[Test]
 		public void Edit()
 		{
-			var  src  = new MemoryStream();
+			var dest = new MemoryStream();
 			long size = 0;
 			{
-				var obj = new ContentDescriptionObject( null, 0 );
+				var src1 = new MemoryStream();
+				var obj  = new ContentDescriptionObject( null, 0 );
 				foreach( var data in TestData )
 				{
 					obj.Write( data.Key, data.Value );
 				}
 
-				obj.Save( src );
-				src.Seek( 0, SeekOrigin.Begin );
+				obj.Save( src1, dest );
+				dest.Seek( 0, SeekOrigin.Begin );
 				size = obj.Size;
 			}
 
-			var header = new ObjectHeader( src );
-			var obj2   = new ContentDescriptionObject( src, header.Size );
+			var header = new ObjectHeader( dest );
+			var obj2   = new ContentDescriptionObject( dest, header.Size );
 
-			Assert.AreEqual( size, src.Length, "サイズ" );
+			Assert.AreEqual( size, dest.Length, "サイズ" );
 			foreach( var data in TestData )
 			{
-				var value = obj2.Read( data.Key );
+				var value = obj2.Read( dest, data.Key );
 				Assert.AreEqual( data.Value, value, "タグ情報" );
 			}
 		}
@@ -67,7 +68,7 @@ namespace Owl.Test.Asf
 			var obj = CreateTestObject();
 			foreach( var testValue in TestData )
 			{
-				var value = obj.Read( testValue.Key );
+				var value = obj.Read( null, testValue.Key );
 				Assert.AreEqual( testValue.Value, value, "タグ情報" );
 			}
 		}

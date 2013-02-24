@@ -8,7 +8,7 @@ namespace Owl.Asf.Objects
 	/// このオブジェクトの所有するデータは全て固定長・固定型でああるため、Write メソッドによる編集はサポートしません。
 	/// 編集をサポートするデータは FileSize のみとなりますが、プロパティ経由で操作してください。
 	/// </summary>
-	class FilePropertiesObject : IAsfObject
+	sealed class FilePropertiesObject : IAsfObject
 	{
 		/// <summary>
 		/// インスタンスを初期化します。
@@ -56,10 +56,11 @@ namespace Owl.Asf.Objects
 		/// <summary>
 		/// タグ情報を読み取ります。
 		/// </summary>
-		/// <param name="tag">タグ。</param>
 		/// <param name="src">情報を読み取るストリーム。</param>
+		/// <param name="tag">タグ。</param>
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
-		public object Read( AsfTagInfo tag )
+		/// <exception cref="NotSupportedException">未サポートの操作です。</exception>
+		public object Read( Stream src, AsfTagInfo tag )
 		{
 			if( tag == AsfTags.Duration )
 			{
@@ -78,7 +79,7 @@ namespace Owl.Asf.Objects
 		/// </summary>
 		/// <param name="src">タグ情報の読み出し元となるストリーム。</param>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( Stream dest )
+		public void Save( Stream src, Stream dest )
 		{
 			// ヘッダ
 			dest.Write( FilePropertiesObject.Id.ToByteArray(), 0, 16 );

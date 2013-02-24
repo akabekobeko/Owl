@@ -45,6 +45,7 @@
     <Compile Include="Asf\AsfTagInfo.cs" />
     <Compile Include="Asf\AsfTags.cs" />
     <Compile Include="Asf\Objects\ContentDescriptionObject.cs" />
+    <Compile Include="Asf\Objects\ExtendedContentDescriptionObject.cs" />
     <Compile Include="Asf\Objects\FilePropertiesObject.cs" />
     <Compile Include="Asf\Objects\HeaderObject.cs" />
     <Compile Include="Asf\Objects\HeaderObjectType.cs" />
