@@ -91,9 +91,26 @@ namespace Owl.Asf.Objects
 		/// 編集内容を保存します
 		/// </summary>
 		/// <param name="dest">保存先となるストリーム。</param>
+		/// <exception cref="ArgumentNullException">dest が null 参照です。</exception>
 		public void Save( Stream dest )
 		{
-			throw new NotImplementedException();
+			if( dest == null ) { throw new ArgumentNullException( "'dest' is null." ); }
+
+			dest.Seek( 0, SeekOrigin.Begin );
+			dest.Write( HeaderObject.Id.ToByteArray(), 0, 16 );
+			dest.Write( BitConverter.GetBytes( ( ulong )this.Size ), 0, 8 );
+			dest.Write( BitConverter.GetBytes( ( uint )( this._objects.Count + this._unknowns.Count ) ), 0, 4 );
+			dest.Write( this._reserved, 0, 2 );
+
+			foreach( var obj in this._objects.Values )
+			{
+				obj.Save( this._src, dest );
+			}
+
+			foreach( var obj in this._unknowns )
+			{
+				obj.Save( this._src, dest );
+			}
 		}
 
 		/// <summary>
@@ -113,6 +130,7 @@ namespace Owl.Asf.Objects
 				var size = obj.Size - old;
 				this.Size += size;
 
+				// ファイル サイズを更新
 				var file = this._objects[ HeaderObjectType.FileProperties ] as FilePropertiesObject;
 				file.FileSize += ( ulong )( size );
 			}

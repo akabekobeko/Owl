@@ -65,6 +65,44 @@ namespace Owl.Test.Asf
 		}
 
 		/// <summary>
+		/// 読み取ったメタデータの複製をテストします。
+		/// </summary>
+		[Test]
+		public void Copy()
+		{
+			var path = String.Format( @"{0}\TestData\test.wma", AppDomain.CurrentDomain.BaseDirectory );
+			using( var src = new FileStream( path, FileMode.Open, FileAccess.Read ) )
+			{
+				var obj1 = new HeaderObject( src );
+
+				// 複製
+				var dest = new MemoryStream();
+				obj1.Save( dest );
+				dest.Seek( 0, SeekOrigin.Begin );
+				Assert.AreEqual( obj1.Size, dest.Length, "サイズ" );
+
+				// 値
+				var obj2 = new HeaderObject( dest );
+				{
+					// FilePropertiesObject
+					var duration1 = obj1.Read( AsfTags.Duration ) as TimeSpan?;
+					var duration2 = obj2.Read( AsfTags.Duration ) as TimeSpan?;
+					Assert.AreEqual( duration1, duration2, "演奏時間" );
+
+					// ContentDescription
+					var title1 = obj1.Read( AsfTags.Title ) as string;
+					var title2 = obj2.Read( AsfTags.Title ) as string;
+					Assert.AreEqual( title1, title2, "タイトル" );
+
+					// ExtendedContentDescription
+					var album1 = obj1.Read( AsfTags.AlbumTitle ) as string;
+					var album2 = obj2.Read( AsfTags.AlbumTitle ) as string;
+					Assert.AreEqual( album1, album2, "アルバム" );
+				}
+			}
+		}
+
+		/// <summary>
 		/// タグの所持チェックをテストします。
 		/// </summary>
 		[Test]
