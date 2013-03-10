@@ -48,6 +48,10 @@ namespace Owl.Asf.Objects
 				{
 					this._objects.Add( HeaderObjectType.ContentDescription, new ContentDescriptionObject( this._src, objectHeader.Size ) );
 				}
+				else if( objectHeader.Guid == ExtendedContentDescriptionObject.Id )
+				{
+					this._objects.Add( HeaderObjectType.ExtendedContentDescription, new ExtendedContentDescriptionObject( this._src, objectHeader.Size ) );
+				}
 				else
 				{
 					this._unknowns.Add( new UnknownObject( this._src, objectHeader ) );

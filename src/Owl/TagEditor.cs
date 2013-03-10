@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Owl.Asf;
 
 namespace Owl
 {
@@ -17,7 +18,14 @@ namespace Owl
 		{
 			if( src == null || src.Length == 0 ) { throw new ArgumentException( "'src' is null or empty." ); }
 
-			throw new NotSupportedException();
+			if( AsfTagEditor.IsSupportedFile( src ) )
+			{
+				this._editor = new AsfTagEditor( src );
+			}
+			else
+			{
+				throw new NotSupportedException();
+			}
 		}
 
 		/// <summary>
@@ -25,6 +33,13 @@ namespace Owl
 		/// </summary>
 		public void Dispose()
 		{
+			if( this._editor != null )
+			{
+				this._editor.Dispose();
+				this._editor = null;
+			}
+
+			GC.SuppressFinalize( this );
 		}
 
 		/// <summary>
@@ -34,7 +49,7 @@ namespace Owl
 		/// <returns>所有している場合は true。それ以外は false。</returns>
 		public bool HasValue( TagInfo tag )
 		{
-			throw new System.NotImplementedException();
+			return this._editor.HasValue( tag );
 		}
 
 		/// <summary>
@@ -44,16 +59,16 @@ namespace Owl
 		/// <returns>成功時はタグ情報。それ以外は null 参照。</returns>
 		public object Read( TagInfo tag )
 		{
-			throw new System.NotImplementedException();
+			return this._editor.Read( tag );
 		}
 
 		/// <summary>
 		/// 編集内容を保存します。
 		/// </summary>
 		/// <param name="dest">保存先となるストリーム。</param>
-		public void Save( System.IO.Stream dest )
+		public void Save( Stream dest )
 		{
-			throw new System.NotImplementedException();
+			this._editor.Save( dest );
 		}
 
 		/// <summary>
@@ -63,7 +78,12 @@ namespace Owl
 		/// <param name="value">タグ情報。値を削除する場合は null を指定します。</param>
 		public void Write( TagInfo tag, object value )
 		{
-			throw new System.NotImplementedException();
+			this._editor.Write( tag, value );
 		}
+
+		/// <summary>
+		/// タグ情報を編集するためのオブジェクト。
+		/// </summary>
+		private ITagEditor _editor;
 	}
 }

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asf\AsfTagEditorTest.cs" />
     <Compile Include="Asf\ContentDescriptionObjectTest.cs" />
     <Compile Include="Asf\ExtendedContentDescriptionObjectTest.cs" />
     <Compile Include="Asf\FilePropertiesObjectTest.cs" />

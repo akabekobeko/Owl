@@ -845,7 +845,7 @@ namespace Owl.Asf
 		/// <summary>
 		/// 汎用タグ定義から ASF のタグ定義を取得するためのディクショナリ。
 		/// </summary>
-		private static readonly Dictionary<TagInfo, AsfTagInfo> InfoByCommon = new Dictionary<TagInfo, AsfTagInfo>()
+		private static readonly Dictionary< TagInfo, AsfTagInfo > InfoByCommon = new Dictionary< TagInfo, AsfTagInfo >()
 		{
 			{ Tags.AlbumArtist,             AsfTags.AlbumArtist             },
 			{ Tags.AlbumTitle,              AsfTags.AlbumTitle              },
